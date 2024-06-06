@@ -30,6 +30,7 @@ type Db struct {
 	mergeMu sync.Mutex
 }
 
+// NewDb creates a new database
 func NewDb(dir string) (*Db, error) {
 	outputPath := filepath.Join(dir, outFileName)
 	f, err := os.OpenFile(outputPath, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0o600)
@@ -41,7 +42,7 @@ func NewDb(dir string) (*Db, error) {
 		out:     f,
 		index:   make(hashIndex),
 	}
-	err = db.recover()
+	err = db.recover() // Recover data from the file
 	if err != nil && err != io.EOF {
 		return nil, err
 	}
@@ -50,6 +51,7 @@ func NewDb(dir string) (*Db, error) {
 
 const bufSize = 8192
 
+// recover loads the index from the data file
 func (db *Db) recover() error {
 	fmt.Println("Recovering database...")
 	input, err := os.Open(db.outPath)
@@ -182,6 +184,7 @@ func (db *Db) Delete(key string) error {
 	return err
 }
 
+// mergeSegments merges data segments to save space
 func (db *Db) mergeSegments() {
 	fmt.Println("Starting segment merge")
 	db.mergeMu.Lock()
@@ -259,6 +262,7 @@ func (db *Db) mergeSegments() {
 	fmt.Println("Current out file reopened")
 }
 
+// readValue reads the value of an entry
 func readValue(in *bufio.Reader) (string, error) {
 	header, err := in.Peek(8)
 	if err != nil {
