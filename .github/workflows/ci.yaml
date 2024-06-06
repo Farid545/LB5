@@ -31,8 +31,8 @@ jobs:
       - name: Log in to DockerHub
         uses: docker/login-action@v1
         with:
-          username: Maks-korsh
-          password: 123456
+          username: Farid545
+          password: 0519845965farid
 
       - name: Build Docker images
         run: docker-compose -f docker-compose.yaml -f docker-compose.test.yaml build
