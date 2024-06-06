@@ -9,13 +9,16 @@ import (
 	"log"
 )
 
+// TestDb_Put tests the Put and Get methods of the database
 func TestDb_Put(t *testing.T) {
+	// Create a temporary directory for the test
 	dir, err := ioutil.TempDir("", "test-db")
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer os.RemoveAll(dir)
 
+	// Create a new database
 	db, err := NewDb(dir)
 	if err != nil {
 		t.Fatal(err)
@@ -28,6 +31,7 @@ func TestDb_Put(t *testing.T) {
 		{"key3", "value3"},
 	}
 
+	// Test putting and getting key-value pairs
 	t.Run("put/get", func(t *testing.T) {
 		for _, pair := range pairs {
 			log.Printf("Putting key: %s value: %s", pair[0], pair[1])
@@ -45,6 +49,7 @@ func TestDb_Put(t *testing.T) {
 		}
 	})
 
+	// Test if the file grows with many entries
 	t.Run("file growth", func(t *testing.T) {
 		for i := 0; i < 1000; i++ {
 			err := db.Put("key"+strconv.Itoa(i), "value"+strconv.Itoa(i))
@@ -53,7 +58,8 @@ func TestDb_Put(t *testing.T) {
 			}
 		}
 	})
-
+	
+	// Test if a new database process recovers the data
 	t.Run("new db process", func(t *testing.T) {
 		if err := db.Close(); err != nil {
 			t.Fatal(err)
@@ -74,7 +80,9 @@ func TestDb_Put(t *testing.T) {
 	})
 }
 
+// TestSegmentMerge tests the segment merging functionality
 func TestSegmentMerge(t *testing.T) {
+	// Create a temporary directory for the test
 	dir, err := ioutil.TempDir("", "test-db")
 	if err != nil {
 		t.Fatal(err)
