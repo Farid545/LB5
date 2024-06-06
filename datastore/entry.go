@@ -9,10 +9,11 @@ type entry struct {
 	key, value string
 }
 
+// Encode converts the entry to a byte slice
 func (e *entry) Encode() []byte {
 	fmt.Println("Encoding entry:", e.key, e.value)
-	kl := len(e.key)
-	vl := len(e.value)
+	kl := len(e.key) // Key length
+	vl := len(e.value) // Value length
 	size := kl + vl + 12
 	res := make([]byte, size)
 	binary.LittleEndian.PutUint32(res, uint32(size))
@@ -23,6 +24,7 @@ func (e *entry) Encode() []byte {
 	return res
 }
 
+// Decode converts a byte slice back to an entry
 func (e *entry) Decode(input []byte) {
 	fmt.Println("Decoding entry")
 	kl := binary.LittleEndian.Uint32(input[4:])
@@ -30,7 +32,7 @@ func (e *entry) Decode(input []byte) {
 	copy(keyBuf, input[8:kl+8])
 	e.key = string(keyBuf)
 
-	vl := binary.LittleEndian.Uint32(input[kl+8:])
+	vl := binary.LittleEndian.Uint32(input[kl+8:]) // Get value length
 	valBuf := make([]byte, vl)
 	copy(valBuf, input[kl+12:kl+12+vl])
 	e.value = string(valBuf)
